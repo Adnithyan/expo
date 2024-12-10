@@ -1,31 +1,70 @@
----
-title: Set up your environment
-description: Learn how to set up your development environment to start building with Expo.
-hideTOC: true
----
 
-import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
-import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
-import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
+App.js
+```
+jsx
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button } from 'react-native';
+import TeamMaker from './TeamMaker';
 
-Let's set up a local development environment for running your project on Android and iOS.
+const App = () => {
+  const [names, setNames] = useState('');
+  const [teamSize, setTeamSize] = useState(0);
+  const [teams, setTeams] = useState([]);
 
-## Where would you like to develop?
+  const handleShuffle = () => {
+    const teams = TeamMaker.shuffleAndAssignTeams(names.split(','), teamSize);
+    setTeams(teams);
+  };
 
-We recommend using a real device to develop, since you'll get to see exactly what your users will see.
+  return (
+    <View>
+      <Text>Team Maker</Text>
+      <TextInput
+        placeholder="Enter names/numbers separated by commas"
+        value={names}
+        onChangeText={(text) => setNames(text)}
+      />
+      <TextInput
+        placeholder="Enter team size"
+        value={teamSize.toString()}
+        onChangeText={(text) => setTeamSize(parseInt(text))}
+        keyboardType="numeric"
+      />
+      <Button title="Shuffle & Assign Teams" onPress={handleShuffle} />
+      {teams.map((team, index) => (
+        <Text key={index}>Team {index + 1}: {team.join(', ')}</Text>
+      ))}
+    </View>
+  );
+};
 
-<PlatformAndDeviceForm />
+export default App;
+```
 
-## How would you like to develop?
+TeamMaker.js
+```
+const shuffleAndAssignTeams = (names, teamSize) => {
+  const shuffledNames = names.sort(() => Math.random() - 0.5);
+  const teams = [];
+  for (let i = 0; i < shuffledNames.length; i += teamSize) {
+    teams.push(shuffledNames.slice(i, i + teamSize));
+  }
+  return teams;
+};
 
-Expo Go is a sandbox for trying out Expo quickly. A development build is a build of your own app that includes Expo's developer tools.
+export default { shuffleAndAssignTeams };
+```
 
-<DevelopmentModeForm />
+styles.js
+```
+const styles = {
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+};
 
----
+export default styles;
+```
 
-<DevelopmentEnvironmentInstructions />
-
-## Next step
-
-You have a project and a development environment. Now it's time to start developing.
